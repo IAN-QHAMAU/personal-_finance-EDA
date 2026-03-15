@@ -3,9 +3,7 @@
 A narrative summary of the exploratory data analysis across the personal finance dataset, covering cashflow, spending concentration, income structure, timing patterns, and the actions that matter most.
 
 ## Live project links
-
-- **GitHub Pages:** [Add your live site link here](https://your-username.github.io/your-repo-name/)
-- **Repository:** [Add your GitHub repo link here](https://github.com/your-username/your-repo-name)
+link-https://ian-qhamau.github.io/personal_finance-EDA/
 
 ---
 
@@ -13,7 +11,6 @@ A narrative summary of the exploratory data analysis across the personal finance
 
 ```text
 personal finance EDA/
-├── README.md
 ├── personal_finance.html
 ├── data/
 │   └── Personal_Finance_Dataset.csv
@@ -27,6 +24,7 @@ personal finance EDA/
 	├── 05_amount_distribution_by_type.png
 	├── 06_spending_by_weekday.png
 	└── 07_expense_heatmap_top_categories.png
+	├── README.md
 ```
 
 > Virtual environment folders are intentionally excluded from this structure.
