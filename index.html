@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personal Finance Story Report</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg-soft: #0d1b2a;
+      --panel: rgba(14, 28, 46, 0.72);
+      --panel-strong: rgba(10, 22, 38, 0.92);
+      --line: rgba(255, 255, 255, 0.1);
+      --text: #edf4ff;
+      --muted: #9cb3cc;
+      --danger: #ff6b6b;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --accent: #60a5fa;
+      --accent-2: #a78bfa;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+      --max: 1240px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.18), transparent 26%),
+        linear-gradient(180deg, #06101c 0%, #07111f 45%, #091626 100%);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.8), transparent 95%);
+    }
+
+    .progress-bar {
+      position: fixed;
+      inset: 0 auto auto 0;
+      width: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      z-index: 999;
+      box-shadow: 0 0 18px rgba(96, 165, 250, 0.8);
+    }
+
+    .container {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      padding: 64px 0 42px;
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .glass {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      right: -50px;
+      top: -50px;
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.22), transparent 70%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.85rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #c4d7ef;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin: 20px 0 18px;
+      font-size: clamp(2.5rem, 5vw, 5rem);
+      line-height: 0.96;
+      letter-spacing: -0.04em;
+      max-width: 12ch;
+    }
+
+    .lead {
+      font-size: 1.08rem;
+      color: var(--muted);
+      max-width: 60ch;
+      margin-bottom: 24px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .tag {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #dce9f8;
+      font-size: 0.93rem;
+    }
+
+    .hero-panel {
+      padding: 26px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .hero-panel h3 {
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #d8e5f7;
+      margin-bottom: 8px;
+    }
+
+    .signal {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .signal strong {
+      display: block;
+      font-size: 1.8rem;
+      margin-bottom: 2px;
+    }
+
+    .signal small {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .signal.bad strong { color: var(--danger); }
+    .signal.good strong { color: var(--success); }
+    .signal.warn strong { color: var(--warning); }
+
+    .section {
+      padding: 40px 0;
+      position: relative;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 24px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      margin-bottom: 8px;
+      letter-spacing: -0.03em;
+    }
+
+    .section-header p {
+      max-width: 60ch;
+      color: var(--muted);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .kpi-card {
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -30px -30px auto;
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%);
+    }
+
+    .kpi-label {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.78rem;
+      margin-bottom: 12px;
+    }
+
+    .kpi-value {
+      font-size: clamp(1.75rem, 3vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .kpi-note {
+      color: #d4e2f3;
+      font-size: 0.96rem;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 22px;
+      margin-top: 22px;
+    }
+
+    .narrative,
+    .visual-card,
+    .timeline,
+    .table-card,
+    .action-plan,
+    .insight-card {
+      padding: 28px;
+    }
+
+    .narrative p:last-child,
+    .insight-card p:last-child,
+    .action-plan p:last-child {
+      margin-bottom: 0;
+    }
+
+    .story-highlight {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .mini-stat {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .mini-stat strong {
+      display: block;
+      font-size: 1.55rem;
+      margin-bottom: 6px;
+    }
+
+    .visual-card img {
+      width: 100%;
+      display: block;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .visual-card figcaption {
+      color: var(--muted);
+      margin-top: 14px;
+      font-size: 0.96rem;
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 22px;
+    }
+
+    .timeline-list {
+      list-style: none;
+      padding: 0;
+      margin: 18px 0 0;
+      display: grid;
+      gap: 18px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 16px;
+      align-items: start;
+      position: relative;
+    }
+
+    .timeline-item:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 58px;
+      top: 42px;
+      bottom: -20px;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(96,165,250,0.5), rgba(167,139,250,0.05));
+    }
+
+    .timeline-date {
+      padding: 10px 12px;
+      border-radius: 999px;
+      text-align: center;
+      background: rgba(96, 165, 250, 0.12);
+      border: 1px solid rgba(96, 165, 250, 0.22);
+      color: #d9e9ff;
+      font-weight: 700;
+    }
+
+    .timeline-body {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .table-card table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .table-card th,
+    .table-card td {
+      text-align: left;
+      padding: 14px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      vertical-align: top;
+    }
+
+    .table-card th {
+      color: #dfeaf9;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .table-card tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.09);
+      color: #e8f1ff;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px 20px;
+      border-left: 4px solid var(--warning);
+      background: rgba(251, 191, 36, 0.08);
+      border-radius: 16px;
+      color: #fdeec3;
+    }
+
+    .action-list {
+      list-style: none;
+      padding: 0;
+      margin: 18px 0 0;
+      display: grid;
+      gap: 14px;
+    }
+
+    .action-list li {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.08);
+      align-items: start;
+    }
+
+    .action-list span {
+      width: 40px;
+      height: 40px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(96,165,250,0.85), rgba(167,139,250,0.85));
+      font-weight: 800;
+    }
+
+    .footer {
+      padding: 38px 0 70px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .story-grid,
+      .split-grid,
+      .kpi-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .hero {
+        min-height: auto;
+        padding-top: 32px;
+      }
+
+      .hero-grid,
+      .story-grid,
+      .split-grid,
+      .kpi-grid,
+      .story-highlight,
+      .timeline-item {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .hero-panel,
+      .narrative,
+      .visual-card,
+      .timeline,
+      .table-card,
+      .action-plan,
+      .insight-card,
+      .kpi-card {
+        padding: 22px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .timeline-item:not(:last-child)::after {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <header class="hero container">
+    <div class="hero-grid">
+      <section class="hero-copy glass reveal">
+        <div class="eyebrow">Personal Finance EDA • 2020–2024</div>
+        <h1>A five-year money story, told in full.</h1>
+        <p class="lead">
+          This report turns the EDA into a visual narrative: where money came from, where it leaked out,
+          when cashflow broke down, and which patterns matter most if the goal is control, consistency, and recovery.
+        </p>
+        <div class="hero-tags">
+          <div class="tag">1,500 transactions</div>
+          <div class="tag">60 months tracked</div>
+          <div class="tag">7 visuals, 1 story</div>
+        </div>
+      </section>
+
+      <aside class="hero-panel glass reveal">
+        <h3>Signal board</h3>
+        <div class="signal bad">
+          <strong>$493,107</strong>
+          <small>Net cashflow deficit across the full period</small>
+        </div>
+        <div class="signal warn">
+          <strong>167.17%</strong>
+          <small>Expense-to-income ratio, well above sustainable levels</small>
+        </div>
+        <div class="signal good">
+          <strong>12 / 60</strong>
+          <small>Months that finished positive, just 20% of the timeline</small>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <main>
+    <section class="section container">
+      <div class="section-header reveal">
+        <div>
+          <h2>The executive snapshot</h2>
+          <p>The full dataset covers a multi-year financial history and immediately points to a structural imbalance: expenses consistently outpaced income.</p>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <article class="kpi-card glass reveal">
+          <div class="kpi-label">Date range</div>
+          <div class="kpi-value">2020 → 2024</div>
+          <div class="kpi-note">From January 2, 2020 to December 29, 2024.</div>
+        </article>
+        <article class="kpi-card glass reveal">
+          <div class="kpi-label">Total income</div>
+          <div class="kpi-value">$734,087</div>
+          <div class="kpi-note">All income categories combined over five years.</div>
+        </article>
+        <article class="kpi-card glass reveal">
+          <div class="kpi-label">Total expense</div>
+          <div class="kpi-value">$1,227,194</div>
+          <div class="kpi-note">Spending outweighed earnings by a wide margin.</div>
+        </article>
+        <article class="kpi-card glass reveal">
+          <div class="kpi-label">Net cashflow</div>
+          <div class="kpi-value" style="color: var(--danger);">-$493,107</div>
+          <div class="kpi-note">The core story of this dataset is persistent negative cashflow.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="story-grid">
+        <article class="narrative glass reveal">
+          <div class="eyebrow">Chapter 1</div>
+          <h2>The budget was not under pressure. It was underwater.</h2>
+          <p>
+            Over the full five-year span, spending reached <strong>$1.23M</strong> while income reached only <strong>$734K</strong>.
+            That gap created a cumulative shortfall of <strong>$493K</strong>. This is not a small overspend problem or a few bad months.
+            It is a structural pattern.
+          </p>
+          <p>
+            The expense-to-income ratio landed at <strong>167.17%</strong>, meaning that for every dollar earned, about <strong>$1.67</strong>
+            was spent. In practical terms, the financial system represented here can only continue through depletion, borrowing,
+            irregular external support, or missing income categories not captured in the data.
+          </p>
+          <div class="story-highlight">
+            <div class="mini-stat">
+              <strong>80%</strong>
+              <span>of months ended negative</span>
+            </div>
+            <div class="mini-stat">
+              <strong>20%</strong>
+              <span>of months finished positive</span>
+            </div>
+            <div class="mini-stat">
+              <strong>5 years</strong>
+              <span>of evidence pointing to the same imbalance</span>
+            </div>
+          </div>
+          <div class="callout">
+            The headline insight: this financial picture does not need a minor trim. It needs a reset in spending behavior, income stability, or both.
+          </div>
+        </article>
+
+        <figure class="visual-card glass reveal">
+          <img src="../visuals/01_monthly_income_vs_expense.png" alt="Monthly income versus expense trend" />
+          <figcaption>
+            Monthly income and expense move over time, but expense remains the dominant force across most of the journey.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="story-grid">
+        <figure class="visual-card glass reveal">
+          <img src="../visuals/02_monthly_net_cashflow.png" alt="Monthly net cashflow chart" />
+          <figcaption>
+            Net cashflow by month makes the instability explicit: only a handful of months break above zero.
+          </figcaption>
+        </figure>
+
+        <article class="timeline glass reveal">
+          <div class="eyebrow">Chapter 2</div>
+          <h2>Momentum never truly stabilized.</h2>
+          <p>
+            The monthly story is less about volatility and more about repeated failure to convert income into surplus.
+            Even the strongest month was not enough to offset the broader pattern.
+          </p>
+          <ul class="timeline-list">
+            <li class="timeline-item">
+              <div class="timeline-date">2021-12</div>
+              <div class="timeline-body">
+                <strong>Best month</strong>
+                <p>A net gain of <strong>$20,485.34</strong> shows that positive cashflow was possible, but rare and not repeatable enough.</p>
+              </div>
+            </li>
+            <li class="timeline-item">
+              <div class="timeline-date">2020-12</div>
+              <div class="timeline-body">
+                <strong>Worst month</strong>
+                <p>A net loss of <strong>$24,613.12</strong> marked the low point, highlighting how quickly spending spikes can damage the full-year picture.</p>
+              </div>
+            </li>
+            <li class="timeline-item">
+              <div class="timeline-date">12 / 60</div>
+              <div class="timeline-body">
+                <strong>Positive months</strong>
+                <p>Only one out of every five months produced positive net cashflow. Sustainability needs consistency, and consistency is absent here.</p>
+              </div>
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="section-header reveal">
+        <div>
+          <h2>Where the money went</h2>
+          <p>The spending profile is concentrated enough to be actionable. A relatively small set of categories drove a large share of the outflow.</p>
+        </div>
+      </div>
+
+      <div class="split-grid">
+        <figure class="visual-card glass reveal">
+          <img src="../visuals/03_top_expense_categories.png" alt="Top expense categories" />
+          <figcaption>
+            Spending is not evenly distributed. The biggest categories dominate the budget and create the fastest path to savings if controlled.
+          </figcaption>
+        </figure>
+
+        <article class="insight-card glass reveal">
+          <div class="eyebrow">Chapter 3</div>
+          <h2>Travel was the biggest spending driver.</h2>
+          <p>
+            The leading expense category was <strong>Travel</strong>, totaling <strong>$169,497.79</strong>. More importantly,
+            the top three expense categories together accounted for <strong>40.02%</strong> of all spending.
+          </p>
+          <p>
+            That concentration matters. It means the budget is not bleeding from a thousand tiny decisions alone.
+            A focused intervention on a few categories could materially shift the entire financial outcome.
+          </p>
+          <div class="callout">
+            The fastest route to improvement is not broad austerity. It is disciplined action against the top spending buckets first.
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="split-grid">
+        <article class="insight-card glass reveal">
+          <div class="eyebrow">Chapter 4</div>
+          <h2>Income was concentrated too, but less reassuringly.</h2>
+          <p>
+            The top income category was <strong>Other</strong>, totaling <strong>$370,835.00</strong>. The top three income categories represented
+            <strong>100%</strong> of all recorded income.
+          </p>
+          <p>
+            Concentrated income is not automatically bad, but a dominant category labeled <strong>Other</strong> limits interpretability.
+            It suggests that income may depend on irregular, loosely classified, or non-recurring sources.
+          </p>
+          <p>
+            That weakens planning. Stable financial systems rely on predictable inflow and precise categorization, especially when outflows are already elevated.
+          </p>
+        </article>
+
+        <figure class="visual-card glass reveal">
+          <img src="../visuals/04_top_income_categories.png" alt="Top income categories" />
+          <figcaption>
+            Income appears narrower than spending and may rely heavily on broad or irregular categories rather than diversified recurring sources.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="split-grid">
+        <figure class="visual-card glass reveal">
+          <img src="../visuals/05_amount_distribution_by_type.png" alt="Transaction amount distribution by type" />
+          <figcaption>
+            Transaction size distribution helps separate ordinary activity from outliers and shows how spending and income differ in scale.
+          </figcaption>
+        </figure>
+
+        <article class="insight-card glass reveal">
+          <div class="eyebrow">Chapter 5</div>
+          <h2>The problem was not just frequency. It was transaction magnitude too.</h2>
+          <p>
+            Distribution analysis shows that expense amounts were not only numerous but also capable of reaching large individual values.
+            That matters because budgets usually fail through a combination of routine leakage and high-impact spikes.
+          </p>
+          <p>
+            The largest expense transactions were all close to <strong>$2,000</strong>, which indicates that outlier spending was large enough to reshape monthly outcomes.
+            Monitoring the tails of the distribution is just as important as monitoring averages.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="split-grid">
+        <article class="insight-card glass reveal">
+          <div class="eyebrow">Chapter 6</div>
+          <h2>Spending also had a timing pattern.</h2>
+          <p>
+            Weekday analysis adds behavioral context. It shows when spending accumulated most heavily, which can help map financial outcomes back to routines,
+            work patterns, travel schedules, or discretionary habits.
+          </p>
+          <p>
+            This type of view is especially useful for operational budgeting: it can inform weekly limits, scheduled review points, and automated alerts.
+          </p>
+        </article>
+
+        <figure class="visual-card glass reveal">
+          <img src="../visuals/06_spending_by_weekday.png" alt="Total spending by weekday" />
+          <figcaption>
+            Weekday patterns reveal when spending intensity clusters, turning the budget from a static total into a behavioral signal.
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="story-grid">
+        <figure class="visual-card glass reveal">
+          <img src="../visuals/07_expense_heatmap_top_categories.png" alt="Expense heatmap by top categories and month" />
+          <figcaption>
+            The heatmap shows how major categories stay active across months and where spending intensity flares up over time.
+          </figcaption>
+        </figure>
+
+        <article class="narrative glass reveal">
+          <div class="eyebrow">Chapter 7</div>
+          <h2>The spending pressure was persistent, not isolated.</h2>
+          <p>
+            The category heatmap confirms that the issue was not one-off seasonality alone. Several major categories stayed active across the timeline,
+            meaning the budget was under recurring pressure rather than occasional shock.
+          </p>
+          <p>
+            Persistent high-intensity categories are exactly where policy-style controls work best: monthly caps, pre-commitment budgets,
+            approval thresholds, and weekly variance reviews.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="section-header reveal">
+        <div>
+          <h2>The largest transactions</h2>
+          <p>Outliers deserve special attention because a few large entries can distort entire months.</p>
+        </div>
+      </div>
+
+      <div class="split-grid">
+        <article class="table-card glass reveal">
+          <div class="pill">Largest expenses</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2020-08-22</td>
+                <td>Food &amp; Drink</td>
+                <td>$1,999.82</td>
+                <td>Down occur.</td>
+              </tr>
+              <tr>
+                <td>2020-11-12</td>
+                <td>Food &amp; Drink</td>
+                <td>$1,999.15</td>
+                <td>Order his oil west school.</td>
+              </tr>
+              <tr>
+                <td>2021-03-19</td>
+                <td>Food &amp; Drink</td>
+                <td>$1,997.19</td>
+                <td>Across nothing.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article class="table-card glass reveal">
+          <div class="pill">Largest incomes</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2024-04-10</td>
+                <td>Investment</td>
+                <td>$4,996.00</td>
+                <td>Environmental outside bed institution.</td>
+              </tr>
+              <tr>
+                <td>2023-06-02</td>
+                <td>Investment</td>
+                <td>$4,981.00</td>
+                <td>Window career case south.</td>
+              </tr>
+              <tr>
+                <td>2022-01-22</td>
+                <td>Other</td>
+                <td>$4,975.00</td>
+                <td>Best deal point.</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="story-grid">
+        <article class="action-plan glass reveal">
+          <div class="eyebrow">Final Take</div>
+          <p>
+            The story ends with a short list of levers. Each one connects directly to what the EDA surfaced, not generic personal finance advice.
+          </p>
+          <ul class="action-list">
+            <li>
+              <span>1</span>
+              <div>
+                <strong>Cap the biggest expense category first.</strong>
+                <p>Travel is the largest cost center. That is where the highest-leverage reduction likely sits.</p>
+              </div>
+            </li>
+            <li>
+              <span>2</span>
+              <div>
+                <strong>Reverse-engineer the best month.</strong>
+                <p>Study what made 2021-12 positive and identify whether that pattern can be repeated deliberately.</p>
+              </div>
+            </li>
+            <li>
+              <span>3</span>
+              <div>
+                <strong>Set an expense guardrail against income.</strong>
+                <p>Use a fixed percentage ceiling so spending cannot drift far above earnings without immediate visibility.</p>
+              </div>
+            </li>
+            <li>
+              <span>4</span>
+              <div>
+                <strong>Audit outliers every week.</strong>
+                <p>Large transactions have enough weight to disrupt a month, so they should be reviewed in near real time.</p>
+              </div>
+            </li>
+          </ul>
+        </article>
+
+        <article class="narrative glass reveal">
+          <h2>The final read</h2>
+          <p>
+            This dataset tells a clear story: income existed, but it was not strong enough or stable enough to support the observed level of spending.
+            A handful of categories drove a large share of the pressure, and positive months were too rare to change the direction of travel.
+          </p>
+          <p>
+            The encouraging part is that the problem is measurable. The biggest risks are visible. The strongest months are known.
+            That means the path to improvement can be designed around evidence rather than guesswork.
+          </p>
+          <div class="callout">
+            If this report were reduced to one sentence, it would be this: the budget can improve, but only if large recurring spending is actively managed instead of passively observed.
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    Story report generated from the personal finance exploratory analysis and linked visual outputs.
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.14 });
+
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+
+    const progressBar = document.getElementById('progressBar');
+    const updateProgress = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = progress + '%';
+    };
+
+    updateProgress();
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  </script>
+</body>
+</html>
